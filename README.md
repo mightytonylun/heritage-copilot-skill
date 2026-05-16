@@ -1,15 +1,14 @@
 # heritage-copilot-skill
 
-> **A heritage conservation copilot for Claude Code. Two modes: read the documents a
-> place already has and turn them into a plain-English brief of what matters — and
-> take a place through the Burra Charter process to significance-led conservation
-> recommendations. Built for the people who care for small, low-resource heritage
-> places.**
+> **A heritage conservation copilot for Claude Code — a suite of five commands that
+> help the people who care for small, low-resource heritage places: read their
+> documents, assess significance and condition, and decide what conservation works
+> to do. Built on the Burra Charter.**
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Claude Code](https://img.shields.io/badge/Claude_Code-compatible-blueviolet)
 ![Framework](https://img.shields.io/badge/framework-Burra_Charter_2013-8a6f4a)
-![Version](https://img.shields.io/badge/version-0.1-orange.svg)
+![Version](https://img.shields.io/badge/version-0.2-orange.svg)
 ![Status](https://img.shields.io/badge/status-early_release-lightgrey)
 
 ---
@@ -27,140 +26,67 @@ This skill addresses two specific gaps for those custodians.
 
 **1. The knowledge that never arrives.** When a heritage professional *has* produced
 a Conservation Management Plan or a condition report, that document usually sits in a
-filing cabinet. The knowledge it holds — what fabric is significant, what is
-vulnerable, what must not be altered, what has failed before — never reaches the
-volunteer who picks up the management task. Every new custodian starts from scratch.
+filing cabinet. What fabric is significant, what is vulnerable, what must not be
+altered — it never reaches the volunteer who picks up the management task.
 
 **2. The wrong order.** Ask a general-purpose AI assistant about an old building with
 a problem and it tells you how to fix the problem. In conservation that is the wrong
 order. *What you do to a place is decided by what is significant about it* — not by
-what is broken. Repair a window before you know whether the window matters and you
-can quietly destroy the thing that made the place worth keeping.
+what is broken.
 
-Heritage practice has a settled answer to the second problem: assess significance
-**first**, then let it govern every later decision. **The Burra Charter** — *The
-Australia ICOMOS Charter for Places of Cultural Significance (2013)* — is the standard
-used across Australia for exactly this, with one cautious principle at its centre:
+Heritage practice has a settled answer: assess significance **first**, then let it
+govern every later decision. **The Burra Charter** — *The Australia ICOMOS Charter
+for Places of Cultural Significance (2013)* — is the standard used across Australia,
+with one cautious principle at its centre:
 
 > *Do as much as necessary to care for the place and to make it useable, but
 > otherwise change it as little as possible so that its cultural significance is
 > retained.*
 
-This skill makes Claude Code do both: **surface what the documents already know**,
-and **follow the Burra Charter discipline** instead of jumping to repairs.
-
 ---
 
-## Two modes
+## The commands
+
+`heritage-copilot` is **five commands**, not one monolithic report. Run the whole
+sequence, or jump straight to the one piece of work you need — each command produces
+a complete, useful result on its own.
+
+| Command | What it does | Output |
+|---------|--------------|--------|
+| `/heritage-brief` | Reads the heritage documents a place already has (CMPs, condition reports, listings, statements of significance) | Plain-English **Place Brief** + structured Place Profile |
+| `/heritage-significance` | Assesses cultural significance against the Burra Charter value categories | **Statement of Significance** + element grading |
+| `/heritage-condition` | Assesses physical condition from photos or notes | **Condition snapshot** — each element Good / Fair / Poor / Critical |
+| `/heritage-recommend` | Combines significance × condition into a plan | **Prioritised conservation recommendations** |
+| `/heritage-assess` | Runs the whole sequence end to end | **Full conservation assessment report** |
+
+Each command surfaces its result **on screen as it works** — you don't wait for a
+finished file to see anything.
+
+### Independent entry points, one discipline
+
+The commands are independent, but they are not pick-and-mix. The Burra Charter logic
+still holds: **significance leads.** `/heritage-recommend` will not produce
+conservation works without a significance assessment — if you run it cold, it asks
+for significance first (or points you to `/heritage-significance`). You can *enter*
+the process at the right point for your task; you cannot skip the thinking.
 
 ```mermaid
-flowchart TD
-    P0[Phase 0\nRead what you already have] --> BRIEF[Place Brief\nMode A output]
-    P0 -.seeds.-> P1
-    START[No documents?\nStart here] --> P1[Phase 1\nUnderstand the place]
-    P1 --> P2[Phase 2\nAssess cultural significance]
-    P2 --> P3[Phase 3\nAssess condition]
-    P3 --> P4[Phase 4\nConservation recommendations]
-    P4 --> REPORT[Conservation assessment\nMode B output]
-    style P0 fill:#eef2f8,stroke:#5b7
-    style BRIEF fill:#f5f0e8,stroke:#999
-    style P2 fill:#e8f5e9,stroke:#4caf50
-    style P4 fill:#e8f5e9,stroke:#4caf50
-    style REPORT fill:#f5f0e8,stroke:#999
+flowchart LR
+    B[heritage-brief] --> S[heritage-significance]
+    S --> C[heritage-condition]
+    C --> R[heritage-recommend]
+    B -.-> A[heritage-assess<br/>runs all of it]
+    style A fill:#e8f5e9,stroke:#4caf50
+    style R fill:#e8f5e9,stroke:#4caf50
 ```
 
-| Mode | You want… | The skill runs | You get |
-|------|-----------|----------------|---------|
-| **A — Document brief** | To make sense of the documents a place already has | Phase 0 only | A **Place Brief** + structured Place Profile |
-| **B — Conservation assessment** | A place assessed and works recommended | Phase 0 (if documents exist) → Phases 1–4 | A **conservation assessment report** |
-
-Mode A is a complete, useful job on its own — *"I have a 60-page CMP, just tell me
-what I actually need to know."* Mode B uses the same Phase 0 as its starting point,
-so a custodian never re-types what a consultant already wrote.
-
 ---
 
-## How it works — the phases
-
-### Phase 0 — Read what you already have
-
-The skill ingests whatever heritage documents the place has — Conservation Management
-Plans, Heritage Impact Assessments, statements of significance, asset and maintenance
-plans, old condition reports, heritage register entries, archival notes — in PDF,
-Word, plain text, or pasted text. It extracts a structured **Place Profile**:
-
-- **Significance summary** — what makes the place matter
-- **Significant fabric** — elements named as significant, with their stated level
-- **Known vulnerabilities** — defects and risks already identified
-- **Conservation policies and constraints** — what must not be altered, what requires
-  consent (often implicit — *"where practicable"*, *"subject to approval"*)
-- **Maintenance history** — past works and when they were done
-- **Outstanding actions** — recommended works not yet completed
-- **Source documents** — with an extraction-confidence note for each
-
-Every item is traced to its source document. Contradictions between documents are
-recorded, not silently resolved. Low-confidence extractions are flagged for review.
-The skill **only extracts what is written** — it never infers facts that are not
-there. From the profile it writes a plain-English **Place Brief** a volunteer can
-read in a few minutes. *(See [place_profile.md](skill/reference/place_profile.md).)*
-
-### Phase 1 — Understand the place
-
-A neutral profile before any judgement: identity and use, fabric and materials,
-history, context, statutory status. If Phase 0 ran, this **starts from the Place
-Profile** and just confirms and fills gaps. Unsourced facts are marked "evidence
-needed", never guessed.
-
-### Phase 2 — Assess cultural significance
-
-Assessment against the Burra Charter value categories, a plain-language **Statement
-of Significance**, and an element-by-element significance grade:
-
-| Significance grade | Meaning | Conservation implication |
-|--------------------|---------|--------------------------|
-| **Exceptional** | Rare or outstanding fabric central to significance | Retain and preserve |
-| **High** | Contributes strongly to significance | Retain; repair before replace |
-| **Moderate** | Supports significance or typical of the place | Retain where practical |
-| **Little** | Neither adds to nor detracts from significance | Change acceptable if no harm to significant fabric |
-| **Intrusive** | Detracts from significance (poor later additions) | A candidate for removal |
-
-An existing Statement of Significance found in Phase 0 is **reviewed and built on**,
-not discarded.
-
-### Phase 3 — Assess condition
-
-Each element rated on a four-level rubric — a separate axis from significance:
-
-| Condition | Headline | Who acts |
-|-----------|----------|----------|
-| **Good** | Stable — revisit at the next annual check | Owner / monitor |
-| **Fair** | Routine upkeep — repaint, clean or seal | Owner or general tradesperson |
-| **Poor** | Consult a heritage professional | Heritage-experienced trade, 3–6 months |
-| **Critical** | Seek urgent specialist heritage advice | Heritage practitioner / engineer, urgent |
-
-Vulnerabilities flagged in Phase 0 are each checked specifically. The skill is told
-not to mistake the patina of age for damage.
-
-### Phase 4 — Develop conservation recommendations
-
-Significance × condition sets priority. For every element the skill works a
-**three-question test** — *Do you need to do anything? → What is the least you can
-do? → How have others solved it?* — then recommends a Burra Charter conservation
-process (maintenance, preservation, restoration, reconstruction, adaptation) with an
-urgency, a *who*, and a reversibility note. Conservation policies and outstanding
-actions from Phase 0 are honoured automatically. Recommendations are sequenced:
-safety first, then significant fabric at risk, then maintenance, then intrusive
-elements.
-
----
-
-## The rules it never breaks
-
-These hard rules are embedded in the skill and override everything else.
+## The rules every command keeps
 
 | # | Rule | Basis |
 |---|------|-------|
-| 1 | **Significance leads.** No works recommended before significance is assessed. | Burra Charter Art. 2.2 |
+| 1 | **Significance leads.** No conservation works recommended before significance is assessed. | Burra Charter Art. 2.2 |
 | 2 | **Cautious approach.** As much as necessary, as little as possible. | Art. 3 |
 | 3 | **Retain significant fabric.** Repair before replace; prefer reversible change. | Art. 4, 15 |
 | 4 | **Do not invent.** Extract and assess only what the evidence shows; gaps are flagged, never guessed. | — |
@@ -169,111 +95,45 @@ These hard rules are embedded in the skill and override everything else.
 
 ---
 
-## What you provide
+## What it is *not*
 
-Nothing is mandatory — the skill works with whatever you have and flags what is
-missing.
-
-| Input | Used in | Notes |
-|-------|---------|-------|
-| Heritage documents (CMP, HIA, condition reports, listings, asset plans, notes) | Phase 0 | PDF, Word, text, or pasted. Typed notes count. |
-| Place name, address, current use | Phase 1 | — |
-| Photographs of the place and its elements | Phases 1, 3 | The more, the better the condition read |
-| Description of fabric and materials | Phases 1, 3 | Walls, roof, joinery, setting, landscape |
-| History — dates, alterations, owners, uses | Phases 1, 2 | Sources cited; unsourced facts flagged |
-| Existing heritage listing | Phases 1, 2 | Local, state or National |
-| Your goal | Phase 4 | Sale, repair, adaptation, maintenance, listing |
+- It does **not** replace a qualified heritage practitioner, structural engineer, or
+  statutory heritage advice. It produces reviewable drafts.
+- It does **not** invent history, significance, or document content.
+- It does **not** make automated decisions. Every output is for a person to review.
+- It does **not** reproduce the Burra Charter text (copyright Australia ICOMOS). It
+  describes the *process* and cites Article numbers; authoritative wording is at
+  [australia.icomos.org](https://australia.icomos.org).
 
 ---
 
 ## Install
 
-Clone the repository, then copy the skill into your Claude Code skills directory:
+Clone the repository and copy the commands into your Claude Code skills directory:
 
 ```bash
 git clone https://github.com/mightytonylun/heritage-copilot-skill.git
-mkdir -p ~/.claude/skills/heritage-copilot
-cp -R heritage-copilot-skill/skill/* ~/.claude/skills/heritage-copilot/
+cp -R heritage-copilot-skill/skills/* ~/.claude/skills/
 ```
 
-The skill is a plain `SKILL.md` plus four Markdown reference files — no dependencies,
-no build step.
+That installs all five commands. Each is a self-contained folder (a `SKILL.md` plus
+its `reference/` files) — no dependencies, no build step. To install just one, copy
+only that folder, e.g. `cp -R heritage-copilot-skill/skills/heritage-brief ~/.claude/skills/`.
 
 ## Use
 
-Invoke it directly:
+Invoke any command directly:
 
 ```text
-/heritage-copilot
+/heritage-brief          summarise the documents a place has
+/heritage-significance   draft or review a Statement of Significance
+/heritage-condition      a condition check from photos
+/heritage-recommend      prioritised conservation works
+/heritage-assess         the full assessment, end to end
 ```
 
-Or just ask in natural language:
-
-```text
-Summarise this Conservation Management Plan — what do I actually need to know?
-Assess this heritage cottage and recommend conservation works.
-Draft a Statement of Significance for this place.
-```
-
-The skill establishes which mode you want, asks what documents and evidence you have,
-then works through the phases, pausing where your input is needed.
-
-## Output
-
-Mode A produces a **Place Brief**; Mode B produces a **conservation assessment**:
-
-```text
-[place_name]_place_brief.md                 [place_name]_conservation_assessment.md
-├── Place Brief (plain-English summary)      ├── 1. Place profile
-├── Place Profile (structured extraction)    ├── 2. Statement of Significance + grading
-├── Source documents + confidence            ├── 3. Condition summary table
-└── Limitations note                         ├── 4. Prioritised recommendations
-                                             ├── 5. Evidence gaps and next steps
-                                             └── 6. Limitations note
-```
-
-Both are plain Markdown for a person to review. Language is kept accessible — the
-primary reader is often an owner or volunteer, not a specialist.
-
----
-
-## Example
-
-An illustrative slice of a Phase 4 recommendation for a fictional late-Victorian
-weatherboard cottage:
-
-> **Element:** Front verandah cast-iron lacework
-> **Significance:** High — contributes strongly to the cottage's aesthetic value.
-> **Condition:** Fair — surface corrosion, paint weathered and peeling; iron sound
-> beneath, no section loss. *(Flagged as a known vulnerability in the 2015 CMP —
-> Phase 0.)*
->
-> **Three-question test**
-> 1. *Do you need to do anything?* Yes — paint failure is exposing iron to weather,
->    though the lacework itself is not yet deteriorating.
-> 2. *What is the least you can do?* Hand-prepare, treat the corrosion, repaint in a
->    period-appropriate scheme. No replacement of iron.
-> 3. *How have others solved it?* Standard cyclical maintenance for cast-iron detail.
->
-> **Recommendation:** Maintenance. Owner or general tradesperson. Within 12 months.
-> Do **not** replace the lacework — the existing iron is significant fabric and
-> sound. *(The CMP lists the lacework as significant fabric "to be retained" — that
-> constraint governs this recommendation.)*
-
-A full anonymised worked example is on the [Roadmap](#roadmap).
-
----
-
-## What it is *not*
-
-- It does **not** replace a qualified heritage practitioner, structural engineer, or
-  statutory heritage advice. It produces a reviewable draft.
-- It does **not** invent history, significance, or document content. It extracts and
-  assesses only what the evidence shows, and flags gaps.
-- It does **not** make automated decisions. Every output is for a person to review.
-- It does **not** reproduce the Burra Charter text. The Charter is copyright Australia
-  ICOMOS; the skill describes the *process* and cites Article numbers. Authoritative
-  wording is at [australia.icomos.org](https://australia.icomos.org).
+Or just ask in natural language — *"summarise this Conservation Management Plan"*,
+*"what conservation works does this cottage need?"* — and the matching command runs.
 
 ---
 
@@ -283,51 +143,47 @@ A full anonymised worked example is on the [Roadmap](#roadmap).
 heritage-copilot-skill/
 ├── README.md
 ├── LICENSE
-└── skill/
-    ├── SKILL.md                          # the skill — two modes, Phase 0 + Phases 1-4
-    └── reference/
-        ├── place_profile.md              # Phase 0 — reading documents, the Place Profile
-        ├── significance_assessment.md    # Phase 2 — value categories, Statement of Significance
-        ├── condition_rubric.md           # Phase 3 — four-level condition rubric
-        └── heritage_materials.md         # Phases 3-4 — traditional materials, common mistakes
+└── skills/
+    ├── heritage-brief/        SKILL.md + reference/place_profile.md
+    ├── heritage-significance/ SKILL.md + reference/significance_assessment.md
+    ├── heritage-condition/    SKILL.md + reference/{condition_rubric, heritage_materials}.md
+    ├── heritage-recommend/    SKILL.md + reference/heritage_materials.md
+    └── heritage-assess/       SKILL.md + reference/ (all four)
 ```
+
+Each command bundles the reference files it uses, so every command folder installs
+and runs on its own.
 
 ---
 
 ## Background
 
 This skill grew out of **STEWRD Heritage Copilot**, a research project on management
-tools for small and low-budget heritage sites. Phase 0 is a distilled, open
+tools for small and low-budget heritage sites. `/heritage-brief` is a distilled, open
 adaptation of STEWRD's *Heritage Document Analyser* concept — making the knowledge in
 a place's existing documents reach the people who care for it day to day.
+
+It has been tested end to end on a real 184-page Conservation Management Plan (the
+Queen Victoria Market CMP, 2003).
 
 ---
 
 ## Roadmap
 
-This is an early release. Planned directions, roughly in order:
-
-- [ ] A full anonymised worked example (Mode A and Mode B, start to finish)
+- [ ] A full anonymised worked example (a complete `heritage-assess` run)
 - [ ] Worked examples for a public building and a cultural landscape
 - [ ] Conservation Management Plan (CMP) drafting support
 - [ ] Aboriginal cultural heritage handled with appropriate care and protocols
-- [ ] Additional framework adaptations beyond the Burra Charter, once the Australian
-      workflow is proven
+- [ ] Additional framework adaptations beyond the Burra Charter
 
 ---
 
 ## Contributing
 
-Contributions are welcome, especially from practising heritage professionals.
-Useful contributions include:
-
-- anonymised worked examples (free of identifying details for private places)
-- refinements to the significance method, the condition rubric, or the document
-  extraction structure
-- corrections to the traditional-materials guidance
-- new framework adaptations for other jurisdictions
-
-Please open an issue to discuss substantial changes before a pull request.
+Contributions are welcome, especially from practising heritage professionals:
+anonymised worked examples, refinements to the significance method, condition rubric,
+or document-extraction structure, corrections to the traditional-materials guidance,
+and new framework adaptations. Please open an issue before a substantial pull request.
 
 ---
 
@@ -347,5 +203,5 @@ by, affiliated with, or produced by Australia ICOMOS.
 
 ## License
 
-MIT — see [LICENSE](LICENSE). Note that the referenced charters and guidelines remain
-the copyright of Australia ICOMOS; this licence covers the skill's own text only.
+MIT — see [LICENSE](LICENSE). The referenced charters and guidelines remain the
+copyright of Australia ICOMOS; this licence covers the skill's own text only.

@@ -1,6 +1,6 @@
 # Condition Rubric
 
-Supports Phase 3 of the `heritage-copilot` skill. Defines four condition levels for
+Supports the `heritage-condition` command, and Phase 3 of `heritage-assess`. Defines four condition levels for
 assessing heritage building fabric. Condition is assessed per element and is a
 separate axis from significance.
 

@@ -1,6 +1,6 @@
 # Place Profile — Reading Heritage Documents
 
-Supports Phase 0 of the `heritage-copilot` skill. Phase 0 reads the documents a place
+Supports the `heritage-brief` command, and Phase 0 of `heritage-assess`. Phase 0 reads the documents a place
 already has and extracts a structured **Place Profile** plus a plain-English **Place
 Brief**. The aim is simple: the knowledge a heritage professional already wrote down
 usually never reaches the people doing the day-to-day care. Phase 0 closes that gap.

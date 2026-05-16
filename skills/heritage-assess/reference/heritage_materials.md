@@ -1,6 +1,6 @@
 # Traditional Materials and Common Mistakes
 
-Supports Phases 3 and 4 of the `heritage-copilot` skill. Traditional buildings behave
+Supports the `heritage-condition` and `heritage-recommend` commands, and Phases 3-4 of `heritage-assess`. Traditional buildings behave
 differently from modern ones. Applying modern materials and methods to them — even
 with good intentions — is a frequent cause of avoidable damage. This file paraphrases
 guidance from the Australia ICOMOS *Conservation Guidelines for Building Surveyors*

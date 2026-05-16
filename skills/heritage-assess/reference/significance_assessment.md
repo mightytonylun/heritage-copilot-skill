@@ -1,6 +1,6 @@
 # Significance Assessment Method
 
-Supports Phase 2 of the `heritage-copilot` skill. Based on the value categories in
+Supports the `heritage-significance` command, and Phase 2 of `heritage-assess`. Based on the value categories in
 the Burra Charter (Australia ICOMOS, 2013), Article 1.2, and its accompanying
 Practice Notes. This file paraphrases the method — it does not reproduce Charter
 text. See australia.icomos.org for the authoritative document.
