@@ -1,9 +1,9 @@
 # heritage-copilot-skill
 
-> **A heritage conservation copilot for Claude Code — a suite of five commands that
-> help the people who care for small, low-resource heritage places: read their
-> documents, assess significance and condition, and decide what conservation works
-> to do. Built on the Burra Charter.**
+> **A heritage conservation copilot — a skill pack of five commands that help the
+> people who care for small, low-resource heritage places: read their documents,
+> assess significance and condition, and decide what conservation works to do.
+> Built on the Burra Charter.**
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Claude Code](https://img.shields.io/badge/Claude_Code-compatible-blueviolet)
@@ -109,7 +109,9 @@ flowchart LR
 
 ## Install
 
-Clone the repository and copy the commands into your Claude Code skills directory:
+The pack is currently packaged for **Claude Code** (support for other agent
+environments is on the roadmap). Clone the repository and copy the commands into your
+skills directory:
 
 ```bash
 git clone https://github.com/mightytonylun/heritage-copilot-skill.git
@@ -175,6 +177,7 @@ Queen Victoria Market CMP, 2003).
 - [ ] Conservation Management Plan (CMP) drafting support
 - [ ] Aboriginal cultural heritage handled with appropriate care and protocols
 - [ ] Additional framework adaptations beyond the Burra Charter
+- [ ] Support for agent environments beyond Claude Code
 
 ---
 
